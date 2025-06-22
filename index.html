@@ -185,6 +185,86 @@
         .timeline-content { padding: 0; }
         .timeline-content h3 { color: var(--neon-green); }
         footer { text-align: center; padding: 1.5rem; margin-top: 2rem; background-color: var(--dark-surface); color: var(--secondary-text); font-size: 0.9rem; }
+        
+
+/* --- MOBİL UYUMLULUK STİLLERİ --- */
+
+/* Hamburger Menü Butonu */
+#hamburger-btn {
+    display: none; /* Varsayılan olarak gizli */
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001; /* Menünün üstünde kalması için */
+}
+#hamburger-btn .line {
+    width: 2rem;
+    height: 0.25rem;
+    background: var(--light-text);
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+}
+
+/* Mobil Menü aktif olduğunda hamburger ikonunu X işaretine dönüştür */
+body.mobile-nav-active #hamburger-btn .line:nth-child(1) {
+    transform: rotate(45deg);
+}
+body.mobile-nav-active #hamburger-btn .line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(20px);
+}
+body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
+    transform: rotate(-45deg);
+}
+
+/* Medya Sorgusu: Sadece mobil ekranlarda geçerli olacak stiller */
+@media (max-width: 768px) {
+    /* Masaüstü menüsünü mobilde gizle */
+    header nav#desktop-nav {
+        display: none;
+    }
+
+    /* Hamburger butonunu mobilde göster */
+    #hamburger-btn {
+        display: flex;
+    }
+
+    /* Mobilde görünecek olan menü panelinin kendisi */
+    header nav#desktop-nav.mobile-active {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(18, 18, 18, 0.95);
+        backdrop-filter: blur(10px);
+        transform: translateX(0%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    /* Mobil menüdeki link listesi */
+    header nav#desktop-nav.mobile-active ul {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* Mobil menüdeki her bir link */
+    header nav#desktop-nav.mobile-active ul li a {
+        font-size: 1.5rem;
+        color: var(--light-text);
+    }
+}
         /* KAMPANYA SAYFASI STİLLERİ */
 .campaign-list {
     list-style: none;
@@ -208,18 +288,26 @@
 </head>
 <body>
     <header>
-        <a class="logo" data-target="home">D.H.S<span>.</span></a>
-        <nav>
-            <ul>
-                <li><a data-target="home">Ana Sayfa</a></li>
-                <li><a data-target="campaign-page">Kampanya</a>
-                <li><a data-target="investor">Yatırımcı Ol</a></li>
-                <li><a data-target="how-it-works">Nasıl Çalışır</a></li>
-                <li><a data-target="vision">Vizyonumuz</a></li>
-                <li><a data-target="faq">S.S.S</a></li>
-            </ul>
-        </nav>
-        <div id="auth-buttons"></div>
+    <a class="logo" data-target="home">D.H.S<span>.</span></a>
+    
+    <nav id="desktop-nav">
+        <ul>
+            <li><a data-target="home">Ana Sayfa</a></li>
+            <li><a data-target="campaign-page">Kampanya</a></li>
+            <li><a data-target="investor">Yatırımcı Ol</a></li>
+            <li><a data-target="how-it-works">Nasıl Çalışır</a></li>
+            <li><a data-target="vision">Vizyonumuz</a></li>
+            <li><a data-target="faq">S.S.S</a></li>
+        </ul>
+    </nav>
+
+    <div id="auth-buttons"></div>
+
+    <button id="hamburger-btn">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+    </button>
     </header>
 
     <main>
@@ -345,6 +433,24 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileNav = document.getElementById('desktop-nav');
+    const navLinksMobile = mobileNav.querySelectorAll('a');
+
+    hamburgerBtn.addEventListener('click', () => {
+        document.body.classList.toggle('mobile-nav-active');
+        mobileNav.classList.toggle('mobile-active');
+    });
+
+    // Menüdeki bir linke tıklanınca menünün kapanmasını sağla
+    navLinksMobile.forEach(link => {
+        link.addEventListener('click', () => {
+            if (document.body.classList.contains('mobile-nav-active')) {
+                document.body.classList.remove('mobile-nav-active');
+                mobileNav.classList.remove('mobile-active');
+            }
+        });
+    });
         const apiUrl = 'https://dhs-backend-g9k9.onrender.com';
         const allNavLinks = document.querySelectorAll('header a[data-target], .hero-buttons a');
         const pageSections = document.querySelectorAll('.page-section');
