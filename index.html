@@ -284,6 +284,42 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
 .campaign-list li strong {
     color: var(--neon-green);
 }
+/* <style> etiketlerinin en sonuna ekle */
+
+#my-investments-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.investment-card {
+    padding: 1.5rem; /* glass-effect'ten padding'i buraya taşıdık */
+}
+
+.investment-card h3 {
+    color: var(--neon-green);
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+.investment-card p {
+    color: var(--secondary-text);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.investment-card p strong {
+    color: var(--light-text);
+    font-weight: 600;
+}
+
+.investment-card .investment-date {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    text-align: right;
+}
     </style>
 </head>
 <body>
@@ -291,16 +327,16 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
     <a class="logo" data-target="home">D.H.S<span>.</span></a>
     
     <nav id="desktop-nav">
-        <ul>
-            <li><a data-target="home">Ana Sayfa</a></li>
-            <li><a data-target="campaign-page">Kampanya</a></li>
-            <li><a data-target="investor">Yatırımcı Ol</a></li>
-            <li><a data-target="how-it-works">Nasıl Çalışır</a></li>
-            <li><a data-target="vision">Vizyonumuz</a></li>
-            <li><a data-target="faq">S.S.S</a></li>
-        </ul>
-    </nav>
-
+    <ul>
+        <li><a data-target="home">Ana Sayfa</a></li>
+        <li><a data-target="campaign-page">Kampanya</a></li>
+        <li><a data-target="investor">Yatırımcı Ol</a></li>
+        <li><a data-target="how-it-works">Nasıl Çalışır</a></li>
+        <li><a data-target="vision">Vizyonumuz</a></li>
+        <li><a data-target="faq">S.S.S</a></li>
+        <li class="profile-link" style="display: none;"><a data-target="profile-page">Profilim</a></li>
+    </ul>
+</nav>
     <div id="auth-buttons"></div>
 
     <button id="hamburger-btn">
@@ -422,6 +458,13 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
                 </div>
             </div>
         </section>
+        <section id="profile-page" class="page-section">
+    <div class="container">
+        <h2 id="profile-welcome-message">Yatırımlarım</h2>
+        <div id="my-investments-container">
+            </div>
+    </div>
+</section>
 
     </main>
 
@@ -457,24 +500,32 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
         const authButtonsContainer = document.getElementById('auth-buttons');
         let linesDataCache = [];
         
-        const showPage = (targetId) => {
-            pageSections.forEach(section => {
-                section.classList.remove('active');
-            });
-            const targetPage = document.getElementById(targetId);
-            if (targetPage) {
-                targetPage.classList.add('active');
-            }
-            document.querySelectorAll('header nav a').forEach(link => {
-                link.classList.toggle('active', link.dataset.target === targetId);
-            });
-            if (targetId === 'investor' && linesDataCache.length === 0) {
-                fetchLines();
-            }
-            if(targetId === 'home' && document.getElementById('hero-title')) {
-               const heroTitle = document.getElementById('hero-title');
-               if(heroTitle.textContent === '') {
-                 typeWriter();
+         const showPage = (targetId) => {
+        pageSections.forEach(section => {
+            section.classList.remove('active');
+        });
+        const targetPage = document.getElementById(targetId);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+        document.querySelectorAll('header nav a').forEach(link => {
+            link.classList.toggle('active', link.dataset.target === targetId);
+        });
+        if (targetId === 'investor' && linesDataCache.length === 0) {
+            fetchLines();
+        }
+        if(targetId === 'home' && document.getElementById('hero-title')) {
+           const heroTitle = document.getElementById('hero-title');
+           if(heroTitle.textContent === '') {
+             typeWriter();
+           }
+        }
+        if(targetId === 'campaign-page'){
+            initializeCountdown();
+        }
+        // Yeni eklenen kısım
+        if (targetId === 'profile-page') {
+            fetchMyInvestments();
                  // --- KAMPANYA GERİ SAYIM SAYACI ---
 const countdownEl = document.getElementById('countdown');
 if(countdownEl){
@@ -592,7 +643,54 @@ if(countdownEl){
                 container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
             }
         };
+        const fetchMyInvestments = async () => {
+        const container = document.getElementById('my-investments-container');
+        if (!container) return;
+        
+        container.innerHTML = '<p>Yatırımlarınız yükleniyor...</p>';
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+            showPage('auth-page');
+            alert('Yatırımlarınızı görmek için lütfen giriş yapın.');
+            return;
+        }
 
+        try {
+            const response = await fetch(`${apiUrl}/api/kullanici/yatirimlarim`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                if(response.status === 401 || response.status === 403){
+                    logout(); // Token geçersiz veya süresi dolmuşsa otomatik çıkış yap
+                }
+                throw new Error('Yatırımlarınız getirilemedi.');
+            }
+            
+            const yatirimlar = await response.json();
+            
+            if (yatirimlar.length === 0) {
+                container.innerHTML = '<p>Henüz hiç yatırım yapmamışsınız.</p>';
+                return;
+            }
+
+            container.innerHTML = yatirimlar.map(item => {
+                const investmentDate = new Date(item.yatirim_tarihi).toLocaleDateString('tr-TR');
+                return `
+                <div class="investment-card glass-effect">
+                    <h3>${item.hat_detaylari.ad}</h3>
+                    <p><strong>Sahip Olunan Pay:</strong> %${item.yuzde}</p>
+                    <p><strong>Yatırım Tutarı:</strong> ${item.yatirim_tutari.toLocaleString('tr-TR')} TL</p>
+                    <p><strong>Hattın Mevcut Değeri:</strong> ${item.hat_detaylari.hat_degeri.toLocaleString('tr-TR')} TL</p>
+                    <p class="investment-date"><strong>Yatırım Tarihi:</strong> ${investmentDate}</p>
+                </div>
+                `;
+            }).join('');
+
+        } catch (error) {
+            container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
+        }
+    };
         document.getElementById('lines-grid-container').addEventListener('click', function(e) {
             const card = e.target.closest('.line-card');
             if (!card) return;
@@ -724,25 +822,44 @@ if(countdownEl){
         };
 
         const updateAuthUI = () => {
-            const token = localStorage.getItem('jwtToken');
-            if (token) {
-                authButtonsContainer.innerHTML = `<button id="logout-btn" class="btn btn-secondary">Çıkış Yap</button>`;
-                document.getElementById('logout-btn').addEventListener('click', logout);
-            } else {
-                authButtonsContainer.innerHTML = `<a href="#" class="btn btn-primary" data-target="auth-page">Giriş Yap / Kayıt Ol</a>`;
-                authButtonsContainer.querySelector('a').addEventListener('click', (e) => {
+        const token = localStorage.getItem('jwtToken');
+        const profileLink = document.querySelector('.profile-link'); // Profil linkini seç
+
+        if (token) {
+            authButtonsContainer.innerHTML = `
+                <a href="#" class="btn btn-primary" data-target="profile-page" style="margin-right: 10px;">Profilim</a>
+                <button id="logout-btn" class="btn btn-secondary">Çıkış Yap</button>
+            `;
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            
+            // authButtonsContainer içindeki yeni profil linkine de event listener ekle
+            const profileBtn = authButtonsContainer.querySelector('a[data-target="profile-page"]');
+            if (profileBtn) {
+                profileBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    showPage('auth-page');
+                    showPage('profile-page');
                 });
             }
-        };
+
+            if (profileLink) profileLink.style.display = 'list-item'; // Ana menüdeki linki görünür yap
+
+        } else {
+            authButtonsContainer.innerHTML = `<a href="#" class="btn btn-primary" data-target="auth-page">Giriş Yap / Kayıt Ol</a>`;
+            authButtonsContainer.querySelector('a[data-target="auth-page"]').addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage('auth-page');
+            });
+
+            if (profileLink) profileLink.style.display = 'none'; // Ana menüdeki linki gizle
+        }
+    };
         
         // Başlangıç Ayarları
         loginFormContainer.style.display = 'block';
         registerFormContainer.style.display = 'none';
         showPage('home');
         updateAuthUI();
-    });
+     });
     </script>
 </body>
 </html>
