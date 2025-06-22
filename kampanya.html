@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>D.H.S. - Dolmuş Hat Sistemi | Lansmana Özel Yatırım Fırsatları</title>
+    <meta name="description" content="D.H.S. lansman kampanyası: İlk hafta 40.000 TL'lik hat değeriyle, %10 hisseye sadece 4.000 TL'ye sahip olun! Şehrin gelirine ortak olma fırsatını kaçırmayın.">
+    <meta name="keywords" content="dolmuş, dhs, kampanya, yatırım, pasif gelir, lansman, fırsat, istanbul">
+    <link rel="canonical" href="https://dolmus.co/">
+    
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --neon-green: #39FF14;
+            --light-text: #F5F5F5;
+            --secondary-text: #A0A0A0;
+            --header-height: 80px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Roboto', sans-serif; background-color: var(--dark-bg); color: var(--light-text); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .page-section { display: none; padding-top: 120px; padding-bottom: 60px; animation: fadeIn 0.6s; min-height: 80vh; text-align: center;}
+        .page-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .btn { display: inline-block; padding: 12px 28px; border-radius: 5px; text-decoration: none; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all 0.3s ease; cursor: pointer; border: none; }
+        .btn-primary { background-color: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--glow-color); }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 25px var(--glow-color); }
+        .header-container { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background-color: rgba(18, 18, 18, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--dark-surface); }
+        .logo { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.5rem; color: var(--light-text); cursor: pointer; }
+        .logo span { color: var(--neon-green); }
+        .main-nav a { color: var(--secondary-text); text-decoration: none; margin: 0 10px; font-weight: 500; transition: color 0.3s ease; cursor: pointer; font-size: 0.95rem;}
+        .main-nav a.active, .main-nav a:hover { color: var(--neon-green); }
+        #home { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100vh; padding: 80px 20px 20px; }
+        .hero-content h1 { font-size: 3.5rem; min-height: 4.5rem; }
+        .hero-content p { font-size: 1.2rem; max-width: 600px; margin: 20px auto 40px; color: var(--secondary-text); }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 60px; }
+        .section-title span { color: var(--neon-green); }
+        
+        /* KAMPANYA SAYFASI STİLLERİ */
+        #countdown { font-size: 2rem; font-weight: 600; color: var(--neon-green); margin-bottom: 40px; letter-spacing: 2px; }
+        .campaign-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 1000px; margin: 40px auto; }
+        .campaign-card { background-color: var(--dark-surface); padding: 25px; border-radius: 10px; border: 1px solid #2a2a2a; }
+        .campaign-card h3 { color: var(--neon-green); margin-bottom: 10px; }
+        .campaign-card p { font-size: 1rem; color: var(--secondary-text); margin: 5px 0; }
+        .campaign-card span { font-size: 1.2rem; font-weight: 600; color: var(--light-text); display: block; margin-top: 10px; }
+
+        .main-footer { text-align: center; padding: 40px 20px; margin-top: 60px; border-top: 1px solid var(--dark-surface); color: var(--secondary-text); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <header class="main-header">
+            <div class="logo" data-target="home">D.H.S<span>.</span></div>
+            <nav class="main-nav">
+                <a class="nav-link" data-target="home">Ana Sayfa</a>
+                <a class="nav-link" data-target="campaign-page">Kampanya</a>
+                <a class="nav-link" data-target="investor">Yatırımcı Ol</a>
+            </nav>
+            <div id="auth-buttons">
+                 </div>
+        </header>
+    </div>
+    
+    <main>
+        <section id="home" class="page-section">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 id="hero-title"></h1>
+                    <p>"Ben Dolmuş. Şehrin ulaşım kodunu baştan yazıyorum..."</p>
+                    <a class="btn btn-primary nav-link" data-target="campaign-page">Lansman Fırsatlarını Gör</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="campaign-page" class="page-section">
+            <div class="container">
+                <h2 class="section-title"><span>Lansmana Özel</span> Fiyat Avantajı!</h2>
+                <p style="max-width: 700px; margin: -40px auto 40px; color: var(--secondary-text);">
+                    Artık şehrin gelirine ortak olmak için büyük bir servete ihtiyacın yok. D.H.S.'nin parçalı yatırım modeliyle, 4.000 TL'den başlayan fiyatlarla dilediğin hattaki payını alabilirsin. Tüm hatların değeri lansmana özel sadece 40.000 TL!
+                </p>
+                <div id="countdown">
+                    Bu Fiyatların Bitmesine: <span id="days">--</span>g <span id="hours">--</span>s <span id="minutes">--</span>d
+                </div>
+                <div class="campaign-grid">
+                    <div class="campaign-card"><h3>1. Hafta</h3><p>Hat Değeri: 40.000 TL</p><span>%10 Pay = 4.000 TL</span></div>
+                    <div class="campaign-card"><h3>2. Hafta</h3><p>Hat Değeri: 50.000 TL</p><span>%10 Pay = 5.000 TL</span></div>
+                    <div class="campaign-card"><h3>3. Hafta</h3><p>Hat Değeri: 60.000 TL</p><span>%10 Pay = 6.000 TL</span></div>
+                    <div class="campaign-card"><h3>4. Hafta</h3><p>Hat Değeri: 70.000 TL</p><span>%10 Pay = 7.000 TL</span></div>
+                </div>
+                <a class="btn btn-primary nav-link" data-target="investor" style="margin-top: 40px;">Hemen Hattını Seç ve Al</a>
+            </div>
+        </section>
+
+        <section id="investor" class="page-section"></section>
+        <section id="how-it-works" class="page-section"></section>
+        <section id="faq" class="page-section"></section>
+        <section id="auth-page" class="page-section"></section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 Dolmuş Hat Sistemi. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const allNavLinks = document.querySelectorAll('.nav-link, .logo');
+        const allSections = document.querySelectorAll('.page-section');
+        const heroTitle = document.getElementById('hero-title');
+
+        // --- SAYFA GÖSTERİM MANTIĞI ---
+        function showPage(targetId) {
+            allSections.forEach(section => section.classList.remove('active'));
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) targetSection.classList.add('active');
+
+            document.querySelectorAll('.main-nav a').forEach(link => {
+                link.classList.toggle('active', link.dataset.target === targetId);
+            });
+
+            if (targetId === 'home' && heroTitle && heroTitle.textContent === "") {
+                typeWriter();
+            }
+        }
+
+        allNavLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage(this.dataset.target);
+            });
+        });
+
+        // --- AKAN YAZI ANİMASYONU ---
+        function typeWriter() {
+            const text = "İstanbul'u yeniden programlıyorum.";
+            let i = 0;
+            if (!heroTitle) return;
+            heroTitle.innerHTML = "";
+            function type() {
+                if (i < text.length) {
+                    heroTitle.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 100);
+                }
+            }
+            type();
+        }
+
+        // --- KAMPANYA GERİ SAYIM SAYACI ---
+        const countdownDate = new Date();
+        countdownDate.setDate(countdownDate.getDate() + 30);
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            
+            document.getElementById('days').innerText = days;
+            document.getElementById('hours').innerText = hours;
+            document.getElementById('minutes').innerText = minutes;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById('countdown').innerHTML = "KAMPANYA SONA ERDİ!";
+            }
+        }
+        const countdownInterval = setInterval(updateCountdown, 1000);
+
+        // --- SAYFA BAŞLANGICI ---
+        showPage('home');
+    });
+    </script>
+</body>
+</html>
