@@ -501,62 +501,67 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
         let linesDataCache = [];
         
          const showPage = (targetId) => {
-        pageSections.forEach(section => {
-            section.classList.remove('active');
-        });
-        const targetPage = document.getElementById(targetId);
-        if (targetPage) {
-            targetPage.classList.add('active');
-        }
-        document.querySelectorAll('header nav a').forEach(link => {
-            link.classList.toggle('active', link.dataset.target === targetId);
-        });
-        if (targetId === 'investor' && linesDataCache.length === 0) {
-            fetchLines();
-        }
-        if(targetId === 'home' && document.getElementById('hero-title')) {
-           const heroTitle = document.getElementById('hero-title');
-           if(heroTitle.textContent === '') {
-             typeWriter();
-           }
-        }
-        if(targetId === 'campaign-page'){
-            initializeCountdown();
-        }
-        // Yeni eklenen kısım
-        if (targetId === 'profile-page') {
-            fetchMyInvestments();
-                 // --- KAMPANYA GERİ SAYIM SAYACI ---
-const countdownEl = document.getElementById('countdown');
-if(countdownEl){
-    const countdownDate = new Date();
-    countdownDate.setDate(countdownDate.getDate() + 30);
-
-    const daysEl = document.getElementById('days');
-    const hoursEl = document.getElementById('hours');
-    const minutesEl = document.getElementById('minutes');
-
-    function updateCountdown() {
-        const now = new Date().getTime();
-        const distance = countdownDate - now;
-
-        if(distance < 0) {
-            clearInterval(countdownInterval);
-            countdownEl.innerHTML = "KAMPANYA SONA ERDİ!";
-            return;
-        }
-
-        if (daysEl) daysEl.innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
-        if (hoursEl) hoursEl.innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        if (minutesEl) minutesEl.innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    pageSections.forEach(section => {
+        section.classList.remove('active');
+    });
+    const targetPage = document.getElementById(targetId);
+    if (targetPage) {
+        targetPage.classList.add('active');
     }
+    document.querySelectorAll('header nav a').forEach(link => {
+        link.classList.toggle('active', link.dataset.target === targetId);
+    });
 
-    const countdownInterval = setInterval(updateCountdown, 1000);
-    updateCountdown(); // Sayfa yüklenir yüklenmez başlasın
-}
-               }
+    // Her sayfa için kontrolleri ayrı ayrı yapıyoruz:
+    if (targetId === 'investor' && linesDataCache.length === 0) {
+        fetchLines();
+    }
+    if (targetId === 'home' && document.getElementById('hero-title')) {
+        const heroTitle = document.getElementById('hero-title');
+        if (heroTitle.textContent === '') {
+            typeWriter();
+        }
+    }
+    
+    // Kampanya sayfasını kontrol et ve geri sayımı başlat
+    if (targetId === 'campaign-page') {
+        const countdownEl = document.getElementById('countdown');
+        if(countdownEl){
+            const countdownDate = new Date();
+            countdownDate.setDate(countdownDate.getDate() + 30);
+
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+
+            // Eğer bir sayaç zaten çalışıyorsa, yenisini başlatmadan önce eskisini temizle
+            if(window.countdownInterval) clearInterval(window.countdownInterval);
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
+
+                if(distance < 0) {
+                    clearInterval(window.countdownInterval);
+                    countdownEl.innerHTML = "KAMPANYA SONA ERDİ!";
+                    return;
+                }
+
+                if (daysEl) daysEl.innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+                if (hoursEl) hoursEl.innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                if (minutesEl) minutesEl.innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             }
-        };
+
+            window.countdownInterval = setInterval(updateCountdown, 1000);
+            updateCountdown(); 
+        }
+    }
+    
+    // Profil sayfasını kontrol et
+    if (targetId === 'profile-page') {
+        fetchMyInvestments();
+    }
+};
 
         allNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
