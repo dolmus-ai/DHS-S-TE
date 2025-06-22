@@ -648,54 +648,63 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
                 container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
             }
         };
-        const fetchMyInvestments = async () => {
-        const container = document.getElementById('my-investments-container');
-        if (!container) return;
+        // <script> etiketleri içindeki mevcut fetchMyInvestments fonksiyonunu bununla değiştir
+
+const fetchMyInvestments = async () => {
+    const container = document.getElementById('my-investments-container');
+    if (!container) return;
+    
+    container.innerHTML = '<p>Yatırımlarınız yükleniyor...</p>';
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+        showPage('auth-page');
+        alert('Yatırımlarınızı görmek için lütfen giriş yapın.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${apiUrl}/api/kullanici/yatirimlarim`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            if(response.status === 401 || response.status === 403){
+                logout();
+            }
+            throw new Error('Yatırımlarınız getirilemedi.');
+        }
         
-        container.innerHTML = '<p>Yatırımlarınız yükleniyor...</p>';
-        const token = localStorage.getItem('jwtToken');
-        if (!token) {
-            showPage('auth-page');
-            alert('Yatırımlarınızı görmek için lütfen giriş yapın.');
+        const yatirimlar = await response.json();
+        
+        if (yatirimlar.length === 0) {
+            container.innerHTML = '<p>Henüz hiç yatırım yapmamışsınız.</p>';
             return;
         }
 
-        try {
-            const response = await fetch(`${apiUrl}/api/kullanici/yatirimlarim`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (!response.ok) {
-                if(response.status === 401 || response.status === 403){
-                    logout(); // Token geçersiz veya süresi dolmuşsa otomatik çıkış yap
-                }
-                throw new Error('Yatırımlarınız getirilemedi.');
-            }
+        // DÜZELTME BURADA BAŞLIYOR
+        container.innerHTML = yatirimlar.map(item => {
+            const investmentDate = new Date(item.yatirim_tarihi).toLocaleDateString('tr-TR');
             
-            const yatirimlar = await response.json();
-            
-            if (yatirimlar.length === 0) {
-                container.innerHTML = '<p>Henüz hiç yatırım yapmamışsınız.</p>';
-                return;
-            }
+            // Eğer değerler undefined ise, varsayılan olarak 0 kullan
+            const yatirimTutari = item.yatirim_tutari || 0;
+            const hatDegeri = item.hat_detaylari.hat_degeri || 0;
 
-            container.innerHTML = yatirimlar.map(item => {
-                const investmentDate = new Date(item.yatirim_tarihi).toLocaleDateString('tr-TR');
-                return `
-                <div class="investment-card glass-effect">
-                    <h3>${item.hat_detaylari.ad}</h3>
-                    <p><strong>Sahip Olunan Pay:</strong> %${item.yuzde}</p>
-                    <p><strong>Yatırım Tutarı:</strong> ${item.yatirim_tutari.toLocaleString('tr-TR')} TL</p>
-                    <p><strong>Hattın Mevcut Değeri:</strong> ${item.hat_detaylari.hat_degeri.toLocaleString('tr-TR')} TL</p>
-                    <p class="investment-date"><strong>Yatırım Tarihi:</strong> ${investmentDate}</p>
-                </div>
-                `;
-            }).join('');
+            return `
+            <div class="investment-card glass-effect">
+                <h3>${item.hat_detaylari.ad}</h3>
+                <p><strong>Sahip Olunan Pay:</strong> %${item.yuzde}</p>
+                <p><strong>Yatırım Tutarı:</strong> ${yatirimTutari.toLocaleString('tr-TR')} TL</p>
+                <p><strong>Hattın Mevcut Değeri:</strong> ${hatDegeri.toLocaleString('tr-TR')} TL</p>
+                <p class="investment-date"><strong>Yatırım Tarihi:</strong> ${investmentDate}</p>
+            </div>
+            `;
+        }).join('');
+        // DÜZELTME BURADA BİTİYOR
 
-        } catch (error) {
-            container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
-        }
-    };
+    } catch (error) {
+        container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
+    }
+};
         document.getElementById('lines-grid-container').addEventListener('click', function(e) {
             const card = e.target.closest('.line-card');
             if (!card) return;
