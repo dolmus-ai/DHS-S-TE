@@ -460,13 +460,20 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
         </section>
         <section id="profile-page" class="page-section">
     <div class="container">
-        <h2 id="profile-welcome-message">Yatırımlarım</h2>
-        
+        <h2 id="profile-welcome-message">Profilim</h2>
+
+        <div id="user-info-card" class="glass-effect" style="margin-bottom: 2rem; display: none;">
+            <h4>Hesap Bilgileri</h4>
+            <p id="user-info-email"><strong>E-posta:</strong> <span>Yükleniyor...</span></p>
+            <p id="user-info-joined"><strong>Üyelik Tarihi:</strong> <span>Yükleniyor...</span></p>
+        </div>
+
         <div id="total-asset-summary" class="glass-effect" style="margin-bottom: 2rem; text-align: center; display: none;">
             <h4>Toplam Varlık Değeri</h4>
             <p id="total-asset-value" style="font-size: 2.5rem; color: var(--neon-green); font-weight: 700;">-</p>
         </div>
-        
+
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem;">Yatırımlarım</h3>
         <div id="my-investments-container">
             </div>
     </div>
@@ -540,7 +547,6 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
             const hoursEl = document.getElementById('hours');
             const minutesEl = document.getElementById('minutes');
 
-            // Eğer bir sayaç zaten çalışıyorsa, yenisini başlatmadan önce eskisini temizle
             if(window.countdownInterval) clearInterval(window.countdownInterval);
 
             function updateCountdown() {
@@ -566,9 +572,9 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
     // Profil sayfasını kontrol et
     if (targetId === 'profile-page') {
         fetchMyInvestments();
+        fetchUserInfo();
     }
 };
-
         allNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -654,7 +660,32 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
                 container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
             }
         };
- 
+
+const fetchUserInfo = async () => {
+    const userInfoCard = document.getElementById('user-info-card');
+    const emailEl = document.getElementById('user-info-email').querySelector('span');
+    const joinedEl = document.getElementById('user-info-joined').querySelector('span');
+
+    const token = localStorage.getItem('jwtToken');
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${apiUrl}/api/kullanici/bilgilerim`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Kullanıcı bilgileri alınamadı.');
+
+        const user = await response.json();
+
+        emailEl.textContent = user.email;
+        joinedEl.textContent = new Date(user.kayit_tarihi).toLocaleDateString('tr-TR');
+        userInfoCard.style.display = 'block';
+
+    } catch (error) {
+        emailEl.textContent = 'Bilgiler alınamadı.';
+        joinedEl.textContent = '-';
+    }
+};
 
 const fetchMyInvestments = async () => {
     const container = document.getElementById('my-investments-container');
