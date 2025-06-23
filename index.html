@@ -320,6 +320,23 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
     opacity: 0.7;
     text-align: right;
 }
+/* <style> etiketlerinin sonuna ekle */
+
+.stat-card {
+    text-align: center;
+}
+.stat-card h4 {
+    font-size: 1rem;
+    color: var(--secondary-text);
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+.stat-card p {
+    font-size: 2rem;
+    color: var(--neon-green);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
     </style>
 </head>
 <body>
@@ -460,19 +477,31 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
         </section>
         <section id="profile-page" class="page-section">
     <div class="container">
-        <h2 id="profile-welcome-message">Profilim</h2>
-
-        <div id="user-info-card" class="glass-effect" style="margin-bottom: 2rem; display: none;">
-            <h4>Hesap Bilgileri</h4>
-            <p id="user-info-email"><strong>E-posta:</strong> <span>Yükleniyor...</span></p>
-            <p id="user-info-joined"><strong>Üyelik Tarihi:</strong> <span>Yükleniyor...</span></p>
+        
+        <div id="user-welcome-area" style="display: flex; align-items: center; margin-bottom: 2rem; gap: 1.5rem;">
+            <div id="user-avatar" class="glass-effect" style="width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; flex-shrink: 0; padding:0;">
+                </div>
+            <div>
+                <h2 id="profile-welcome-message" style="text-align: left; margin-bottom: 0.5rem;">Profilim</h2>
+                <p id="profile-user-email" style="color: var(--secondary-text);">Yükleniyor...</p>
+            </div>
         </div>
-
-        <div id="total-asset-summary" class="glass-effect" style="margin-bottom: 2rem; text-align: center; display: none;">
-            <h4>Toplam Varlık Değeri</h4>
-            <p id="total-asset-value" style="font-size: 2.5rem; color: var(--neon-green); font-weight: 700;">-</p>
+        
+        <div id="profile-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="stat-card glass-effect">
+                <h4>Toplam Varlık Değeri</h4>
+                <p id="total-asset-value">-</p>
+            </div>
+            <div class="stat-card glass-effect">
+                <h4>Yatırım Yapılan Hat</h4>
+                <p id="investment-count">-</p>
+            </div>
+            <div class="stat-card glass-effect">
+                <h4>En Yüksek Pay Oranı</h4>
+                <p id="highest-share">-</p>
+            </div>
         </div>
-
+        
         <h3 style="margin-bottom: 1.5rem; font-size: 1.8rem;">Yatırımlarım</h3>
         <div id="my-investments-container">
             </div>
@@ -661,10 +690,12 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
             }
         };
 
+// Mevcut fetchUserInfo ve fetchMyInvestments fonksiyonlarını silip bunları yapıştır
+
 const fetchUserInfo = async () => {
-    const userInfoCard = document.getElementById('user-info-card');
-    const emailEl = document.getElementById('user-info-email').querySelector('span');
-    const joinedEl = document.getElementById('user-info-joined').querySelector('span');
+    const welcomeMessageEl = document.getElementById('profile-welcome-message');
+    const emailEl = document.getElementById('profile-user-email');
+    const avatarEl = document.getElementById('user-avatar');
 
     const token = localStorage.getItem('jwtToken');
     if (!token) return;
@@ -676,59 +707,52 @@ const fetchUserInfo = async () => {
         if (!response.ok) throw new Error('Kullanıcı bilgileri alınamadı.');
 
         const user = await response.json();
-
+        
+        // Kullanıcı adının ilk harfini veya e-postanın ilk harfini al
+        const displayName = user.name || user.email;
+        welcomeMessageEl.textContent = `Hoş Geldin, ${displayName.split('@')[0]}!`;
         emailEl.textContent = user.email;
-        joinedEl.textContent = new Date(user.kayit_tarihi).toLocaleDateString('tr-TR');
-        userInfoCard.style.display = 'block';
+        avatarEl.textContent = displayName.charAt(0).toUpperCase();
 
     } catch (error) {
-        emailEl.textContent = 'Bilgiler alınamadı.';
-        joinedEl.textContent = '-';
+        welcomeMessageEl.textContent = 'Hoş Geldin!';
+        emailEl.textContent = 'E-posta bilgisi alınamadı.';
     }
 };
 
 const fetchMyInvestments = async () => {
     const container = document.getElementById('my-investments-container');
-    const summaryBox = document.getElementById('total-asset-summary');
     const totalValueEl = document.getElementById('total-asset-value');
-    
-    if (!container || !summaryBox || !totalValueEl) return;
+    const countEl = document.getElementById('investment-count');
+    const highestShareEl = document.getElementById('highest-share');
     
     container.innerHTML = '<p>Yatırımlarınız yükleniyor...</p>';
-    summaryBox.style.display = 'none';
     const token = localStorage.getItem('jwtToken');
-    
-    if (!token) {
-        showPage('auth-page');
-        return;
-    }
+    if (!token) { showPage('auth-page'); return; }
 
     try {
         const response = await fetch(`${apiUrl}/api/kullanici/yatirimlarim`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-
-        if (!response.ok) {
-            if(response.status === 401 || response.status === 403){ logout(); }
-            throw new Error('Yatırımlarınız getirilemedi.');
-        }
+        if (!response.ok) throw new Error('Yatırımlarınız getirilemedi.');
         
-        const data = await response.json(); 
+        const data = await response.json();
         const yatirimlar = data.yatirimlar;
-        const toplamVarlik = data.toplam_varlik || 0;
+        const ozet = data.ozet;
         
-        if (!Array.isArray(yatirimlar)) {
+        if (!Array.isArray(yatirimlar) || !ozet) {
              throw new Error("Sunucudan beklenmedik bir formatta veri geldi.");
         }
 
+        // Özet istatistiklerini güncelle
+        totalValueEl.textContent = `${ozet.toplam_varlik.toLocaleString('tr-TR')} TL`;
+        countEl.textContent = `${ozet.yatirim_sayisi} Adet`;
+        highestShareEl.textContent = `%${ozet.en_yuksek_pay}`;
+
         if (yatirimlar.length === 0) {
             container.innerHTML = '<p>Henüz hiç yatırım yapmamışsınız.</p>';
-            summaryBox.style.display = 'none';
             return;
         }
-
-        totalValueEl.textContent = `${toplamVarlik.toLocaleString('tr-TR')} TL`;
-        summaryBox.style.display = 'block';
 
         container.innerHTML = yatirimlar.map(item => {
             const investmentDate = new Date(item.yatirim_tarihi).toLocaleDateString('tr-TR');
@@ -742,13 +766,11 @@ const fetchMyInvestments = async () => {
                 <p><strong>Yatırım Tutarı:</strong> ${yatirimTutari.toLocaleString('tr-TR')} TL</p>
                 <p><strong>Hattın Mevcut Değeri:</strong> ${hatDegeri.toLocaleString('tr-TR')} TL</p>
                 <p class="investment-date"><strong>Yatırım Tarihi:</strong> ${investmentDate}</p>
-            </div>
-            `;
+            </div>`;
         }).join('');
 
     } catch (error) {
         container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
-        summaryBox.style.display = 'none';
     }
 };
         document.getElementById('lines-grid-container').addEventListener('click', function(e) {
