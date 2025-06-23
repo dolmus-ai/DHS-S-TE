@@ -461,6 +461,16 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
         <section id="profile-page" class="page-section">
     <div class="container">
         <h2 id="profile-welcome-message">Yatırımlarım</h2>
+        
+        <div id="total-asset-summary" class="glass-effect" style="margin-bottom: 2rem; text-align: center; display: none;">
+            <h4>Toplam Varlık Değeri</h4>
+            <p id="total-asset-value" style="font-size: 2.5rem; color: var(--neon-green); font-weight: 700;">-</p>
+        </div>
+        
+        <div id="my-investments-container">
+            </div>
+    </div>
+</section>
         <div id="my-investments-container">
             </div>
     </div>
@@ -650,15 +660,21 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
         };
         // <script> etiketleri içindeki mevcut fetchMyInvestments fonksiyonunu bununla değiştir
 
+// Mevcut fetchMyInvestments fonksiyonunu bununla tamamen değiştir
+
 const fetchMyInvestments = async () => {
     const container = document.getElementById('my-investments-container');
-    if (!container) return;
+    const summaryBox = document.getElementById('total-asset-summary');
+    const totalValueEl = document.getElementById('total-asset-value');
+    
+    if (!container || !summaryBox || !totalValueEl) return;
     
     container.innerHTML = '<p>Yatırımlarınız yükleniyor...</p>';
+    summaryBox.style.display = 'none'; // Başlangıçta özet kutusunu gizle
     const token = localStorage.getItem('jwtToken');
+    
     if (!token) {
         showPage('auth-page');
-        alert('Yatırımlarınızı görmek için lütfen giriş yapın.');
         return;
     }
 
@@ -668,38 +684,38 @@ const fetchMyInvestments = async () => {
         });
 
         if (!response.ok) {
-            if(response.status === 401 || response.status === 403){
-                logout();
-            }
+            if(response.status === 401 || response.status === 403){ logout(); }
             throw new Error('Yatırımlarınız getirilemedi.');
         }
         
-        const yatirimlar = await response.json();
+        const data = await response.json();
+        const yatirimlar = data.yatirimlar;
+        const toplamVarlik = data.toplam_varlik || 0;
         
         if (yatirimlar.length === 0) {
             container.innerHTML = '<p>Henüz hiç yatırım yapmamışsınız.</p>';
             return;
         }
 
-        // DÜZELTME BURADA BAŞLIYOR
+        // Toplam varlık kutusunu güncelle ve göster
+        totalValueEl.textContent = `${toplamVarlik.toLocaleString('tr-TR')} TL`;
+        summaryBox.style.display = 'block';
+
         container.innerHTML = yatirimlar.map(item => {
             const investmentDate = new Date(item.yatirim_tarihi).toLocaleDateString('tr-TR');
-            
-            // Eğer değerler undefined ise, varsayılan olarak 0 kullan
             const yatirimTutari = item.yatirim_tutari || 0;
             const hatDegeri = item.hat_detaylari.hat_degeri || 0;
 
             return `
             <div class="investment-card glass-effect">
-                <h3>${item.hat_detaylari.ad}</h3>
-                <p><strong>Sahip Olunan Pay:</strong> %${item.yuzde}</p>
+                <h3>${item.hat_detaylari.ad || 'Bilinmeyen Hat'}</h3>
+                <p><strong>Sahip Olunan Pay:</strong> %${item.yuzde || 0}</p>
                 <p><strong>Yatırım Tutarı:</strong> ${yatirimTutari.toLocaleString('tr-TR')} TL</p>
                 <p><strong>Hattın Mevcut Değeri:</strong> ${hatDegeri.toLocaleString('tr-TR')} TL</p>
                 <p class="investment-date"><strong>Yatırım Tarihi:</strong> ${investmentDate}</p>
             </div>
             `;
         }).join('');
-        // DÜZELTME BURADA BİTİYOR
 
     } catch (error) {
         container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
