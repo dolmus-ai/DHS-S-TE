@@ -459,6 +459,7 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
             </div>
         </section>
         <section id="profile-page" class="page-section">
+    <section id="profile-page" class="page-section">
     <div class="container">
         <h2 id="profile-welcome-message">Yatırımlarım</h2>
         
@@ -467,10 +468,6 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
             <p id="total-asset-value" style="font-size: 2.5rem; color: var(--neon-green); font-weight: 700;">-</p>
         </div>
         
-        <div id="my-investments-container">
-            </div>
-    </div>
-</section>
         <div id="my-investments-container">
             </div>
     </div>
@@ -658,9 +655,7 @@ body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
                 container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
             }
         };
-        // <script> etiketleri içindeki mevcut fetchMyInvestments fonksiyonunu bununla değiştir
-
-// Mevcut fetchMyInvestments fonksiyonunu bununla tamamen değiştir
+ 
 
 const fetchMyInvestments = async () => {
     const container = document.getElementById('my-investments-container');
@@ -670,7 +665,7 @@ const fetchMyInvestments = async () => {
     if (!container || !summaryBox || !totalValueEl) return;
     
     container.innerHTML = '<p>Yatırımlarınız yükleniyor...</p>';
-    summaryBox.style.display = 'none'; // Başlangıçta özet kutusunu gizle
+    summaryBox.style.display = 'none';
     const token = localStorage.getItem('jwtToken');
     
     if (!token) {
@@ -688,16 +683,20 @@ const fetchMyInvestments = async () => {
             throw new Error('Yatırımlarınız getirilemedi.');
         }
         
-        const data = await response.json();
+        const data = await response.json(); 
         const yatirimlar = data.yatirimlar;
         const toplamVarlik = data.toplam_varlik || 0;
         
+        if (!Array.isArray(yatirimlar)) {
+             throw new Error("Sunucudan beklenmedik bir formatta veri geldi.");
+        }
+
         if (yatirimlar.length === 0) {
             container.innerHTML = '<p>Henüz hiç yatırım yapmamışsınız.</p>';
+            summaryBox.style.display = 'none';
             return;
         }
 
-        // Toplam varlık kutusunu güncelle ve göster
         totalValueEl.textContent = `${toplamVarlik.toLocaleString('tr-TR')} TL`;
         summaryBox.style.display = 'block';
 
@@ -719,6 +718,7 @@ const fetchMyInvestments = async () => {
 
     } catch (error) {
         container.innerHTML = `<p style="color: red;">Hata: ${error.message}</p>`;
+        summaryBox.style.display = 'none';
     }
 };
         document.getElementById('lines-grid-container').addEventListener('click', function(e) {
