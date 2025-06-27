@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DHS Admin Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Kaydırma çubuğu stilleri */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #475569;
+            border-radius: 10px;
+            border: 2px solid #1e293b;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #64748b;
+        }
+        /* Aktif menü öğesi için özel stil */
+        .sidebar-item.active {
+            background-color: #334155;
+            color: #f1f5f9;
+        }
+        /* Animasyonlar */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #38bdf8;
+            width: 32px;
+            height: 32px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-300">
+
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-slate-900 p-4 fade-in">
+        <div class="w-full max-w-md">
+            <div class="bg-slate-800 border border-slate-700 shadow-lg rounded-xl p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-white">DHS Admin</h1>
+                    <p class="text-slate-400 mt-2">Yönetim paneline hoş geldiniz</p>
+                </div>
+                <form id="login-form">
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm font-medium text-slate-400 mb-2">E-posta (Admin)</label>
+                        <input type="email" id="username" value="furkanadmin@dhs.com" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-slate-400 mb-2">Şifre</label>
+                        <input type="password" id="password" value="" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center">
+                        <span class="button-text">Giriş Yap</span>
+                        <div class="spinner hidden ml-2"></div>
+                    </button>
+                    <p id="login-error" class="text-red-500 text-sm mt-4 text-center hidden">Kullanıcı adı veya şifre hatalı.</p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-panel" class="hidden">
+        <div class="flex h-screen bg-slate-800">
+            <div class="w-64 bg-slate-900 p-4 flex flex-col border-r border-slate-700">
+                <div class="text-2xl font-bold text-white mb-8 shrink-0">DHS Admin</div>
+                <nav class="flex-grow">
+                    <ul class="space-y-2">
+                        <li><a href="#" class="sidebar-item flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors active" data-page="dashboard">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Anasayfa</a>
+                        </li>
+                        <li><a href="#" class="sidebar-item flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors" data-page="lines">
+                            <i data-lucide="signal" class="w-5 h-5"></i> Hat Yönetimi</a>
+                        </li>
+                        <li><a href="#" class="sidebar-item flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors" data-page="campaigns">
+                            <i data-lucide="megaphone" class="w-5 h-5"></i> Kampanyalar</a>
+                        </li>
+                        <li><a href="#" class="sidebar-item flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors" data-page="users">
+                           <i data-lucide="users" class="w-5 h-5"></i> Kullanıcılar</a>
+                        </li>
+                         <li><a href="#" class="sidebar-item flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors" data-page="sales">
+                           <i data-lucide="bar-chart-3" class="w-5 h-5"></i> Satış Raporları</a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="shrink-0">
+                     <a href="#" id="logout-button" class="sidebar-item flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-red-900/50 text-red-400 transition-colors">
+                        <i data-lucide="log-out" class="w-5 h-5"></i> Çıkış Yap</a>
+                </div>
+            </div>
+
+            <main class="flex-1 p-8 overflow-y-auto">
+                <h1 id="page-title" class="text-3xl font-bold text-white mb-8">Anasayfa</h1>
+                
+                <div id="content-container">
+                    </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="add-line-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-lg shadow-xl fade-in">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+                <h3 class="text-xl font-semibold text-white">Yeni Hat Ekle</h3>
+                <button class="close-modal-btn text-slate-400 hover:text-white">&times;</button>
+            </div>
+            <form id="add-line-form" class="p-6 space-y-4">
+                <div>
+                    <label for="line-name" class="block text-sm font-medium text-slate-400 mb-2">Hat Adı</label>
+                    <input type="text" id="line-name" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                </div>
+                 <div>
+                    <label for="line-price" class="block text-sm font-medium text-slate-400 mb-2">Hat Değeri (₺)</label>
+                    <input type="number" id="line-price" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                </div>
+                <div>
+                    <label for="line-status" class="block text-sm font-medium text-slate-400 mb-2">Durum</label>
+                    <select id="line-status" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        <option value="Aktif">Aktif</option>
+                        <option value="Pasif">Pasif</option>
+                    </select>
+                </div>
+                <div class="pt-4 flex justify-end gap-3">
+                     <button type="button" class="cancel-modal-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg">İptal</button>
+                    <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="edit-line-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-lg shadow-xl fade-in">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+                <h3 class="text-xl font-semibold text-white">Hattı Düzenle</h3>
+                <button class="close-modal-btn text-slate-400 hover:text-white">&times;</button>
+            </div>
+            <form id="edit-line-form" class="p-6 space-y-4">
+                <input type="hidden" id="edit-line-id">
+                <div>
+                    <label for="edit-line-name" class="block text-sm font-medium text-slate-400 mb-2">Hat Adı</label>
+                    <input type="text" id="edit-line-name" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                </div>
+                 <div>
+                    <label for="edit-line-price" class="block text-sm font-medium text-slate-400 mb-2">Hat Değeri (₺)</label>
+                    <input type="number" id="edit-line-price" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500" required>
+                </div>
+                <div>
+                    <label for="edit-line-status" class="block text-sm font-medium text-slate-400 mb-2">Durum</label>
+                    <select id="edit-line-status" class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        <option value="Aktif">Aktif</option>
+                        <option value="Pasif">Pasif</option>
+                    </select>
+                </div>
+                <div class="pt-4 flex justify-end gap-3">
+                     <button type="button" class="cancel-modal-btn bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-lg">İptal</button>
+                    <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg">Değişiklikleri Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_URL = 'https://dhs-backend-g9k9.onrender.com/api/admin';
+
+            // --- DEĞİŞKENLER ---
+            let globalLines = []; // Hat verilerini globalde tutmak için
+            const loginScreen = document.getElementById('login-screen');
+            const mainPanel = document.getElementById('main-panel');
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            const logoutButton = document.getElementById('logout-button');
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            const contentContainer = document.getElementById('content-container');
+            const pageTitle = document.getElementById('page-title');
+
+            // Modal elements
+            const addLineModal = document.getElementById('add-line-modal');
+            const editLineModal = document.getElementById('edit-line-modal');
+            const addLineForm = document.getElementById('add-line-form');
+            const editLineForm = document.getElementById('edit-line-form');
+
+
+            // --- YARDIMCI FONKSİYONLAR ---
+            const showLoading = (button) => {
+                button.disabled = true;
+                button.querySelector('.button-text')?.classList.add('hidden');
+                button.querySelector('.spinner')?.classList.remove('hidden');
+            };
+
+            const hideLoading = (button) => {
+                button.disabled = false;
+                button.querySelector('.button-text')?.classList.remove('hidden');
+                button.querySelector('.spinner')?.classList.add('hidden');
+            };
+
+            const getToken = () => localStorage.getItem('dhs_admin_token');
+            const setToken = (token) => localStorage.setItem('dhs_admin_token', token);
+            const removeToken = () => localStorage.removeItem('dhs_admin_token');
+
+            const apiRequest = async (endpoint, options = {}) => {
+                const token = getToken();
+                const headers = {
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                try {
+                    const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+                    if (response.status === 401 || response.status === 403) {
+                        logout();
+                        throw new Error('Yetkiniz yok veya oturumunuzun süresi dolmuş.');
+                    }
+                     if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ message: 'Sunucudan okunamayan bir hata oluştu.' }));
+                        throw new Error(errorData.message || 'Bilinmeyen bir sunucu hatası oluştu.');
+                    }
+                    if (response.status === 204 || response.headers.get("content-length") === "0") {
+                        return null; 
+                    }
+                    return response.json();
+                } catch (error) {
+                    console.error('API İsteği Hatası:', error);
+                    alert(`Hata: ${error.message}`);
+                    throw error;
+                }
+            };
+            
+            // --- SAYFA İÇERİKLERİNİ YÜKLEME ---
+            const loadDashboard = () => {
+                contentContainer.innerHTML = `
+                    <div class="fade-in">
+                       <p>Panelde yapılacak işlemler buraya eklenebilir.</p>
+                    </div>`;
+                lucide.createIcons();
+            };
+            
+            const loadLines = async () => {
+                contentContainer.innerHTML = `<div class="flex justify-center items-center h-full"><div class="spinner"></div></div>`;
+                try {
+                    const lines = await apiRequest('/lines');
+                    globalLines = lines; // Veriyi global değişkene ata
+                    if (!lines || lines.length === 0) {
+                        contentContainer.innerHTML = `<div class="text-center p-8">
+                            <h3 class="text-lg font-semibold text-white">Henüz Hat Eklenmemiş</h3>
+                            <p class="text-slate-400 mt-2">Başlamak için yeni bir hat ekleyebilirsiniz.</p>
+                             <button id="add-line-btn" class="mt-4 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 mx-auto">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Yeni Hat Ekle
+                            </button>
+                        </div>`;
+                         document.getElementById('add-line-btn').addEventListener('click', () => addLineModal.classList.remove('hidden'));
+                         lucide.createIcons();
+                        return;
+                    }
+                    
+                    let tableRows = lines.map(line => {
+                        const statusClass = line.durum === 'Aktif' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400';
+                        return `
+                            <tr class="border-b border-slate-700 hover:bg-slate-700/50" data-line-id="${line._id}">
+                                <td class="px-6 py-4 font-medium text-white">${line.ad}</td>
+                                <td class="px-6 py-4">₺${(line.hat_degeri || 0).toFixed(2)}</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full ${statusClass}">${line.durum}</span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button class="edit-line-btn font-medium text-sky-400 hover:underline mr-4">Düzenle</button>
+                                    <button class="delete-line-btn font-medium text-red-400 hover:underline">Sil</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    contentContainer.innerHTML = `
+                        <div class="fade-in">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-xl font-semibold text-white">Mevcut Hatlar</h2>
+                                <button id="add-line-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4"></i> Yeni Hat Ekle
+                                </button>
+                            </div>
+                            <div class="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden">
+                                <table class="w-full text-sm text-left">
+                                   <thead class="text-xs text-slate-400 uppercase bg-slate-800">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">Hat Adı</th>
+                                            <th scope="col" class="px-6 py-3">Hat Değeri</th>
+                                            <th scope="col" class="px-6 py-3">Durum</th>
+                                            <th scope="col" class="px-6 py-3 text-right">Aksiyonlar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lines-table-body">${tableRows}</tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                    
+                    // Event listener'ları yeni oluşturulan elementlere bağla
+                    document.getElementById('add-line-btn').addEventListener('click', () => addLineModal.classList.remove('hidden'));
+                    document.querySelectorAll('.delete-line-btn').forEach(button => {
+                        button.addEventListener('click', handleDeleteLine);
+                    });
+                    document.querySelectorAll('.edit-line-btn').forEach(button => {
+                        button.addEventListener('click', handleEditLine);
+                    });
+                    lucide.createIcons();
+                } catch (error) {
+                    contentContainer.innerHTML = `<p class="text-red-400">Hatlar yüklenirken bir hata oluştu.</p>`;
+                }
+            };
+            
+            // --- CRUD İŞLEMLERİ ---
+
+            const handleEditLine = (event) => {
+                const button = event.target;
+                const row = button.closest('tr');
+                const lineId = row.dataset.lineId;
+                const lineData = globalLines.find(line => line._id === lineId);
+
+                if (lineData) {
+                    document.getElementById('edit-line-id').value = lineData._id;
+                    document.getElementById('edit-line-name').value = lineData.ad;
+                    document.getElementById('edit-line-price').value = lineData.hat_degeri;
+                    document.getElementById('edit-line-status').value = lineData.durum;
+                    editLineModal.classList.remove('hidden');
+                } else {
+                    alert('Düzenlenecek hat verisi bulunamadı.');
+                }
+            };
+
+            const handleDeleteLine = async (event) => {
+                const button = event.target;
+                const row = button.closest('tr');
+                const lineId = row.dataset.lineId;
+                const lineName = row.querySelector('td').textContent;
+
+                if (confirm(`'${lineName}' hattını kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`)) {
+                    try {
+                        await apiRequest(`/lines/${lineId}`, { method: 'DELETE' });
+                        alert('Hat başarıyla silindi.');
+                        loadLines();
+                    } catch (error) {
+                        // Hata mesajı zaten apiRequest içinde gösteriliyor.
+                    }
+                }
+            };
+
+            const loadPage = (pageId) => {
+                pageTitle.textContent = document.querySelector(`.sidebar-item[data-page="${pageId}"]`).textContent.trim();
+                switch (pageId) {
+                    case 'dashboard': loadDashboard(); break;
+                    case 'lines': loadLines(); break;
+                    default: contentContainer.innerHTML = `<p>${pageId} sayfası yapım aşamasındadır.</p>`; break;
+                }
+            };
+
+            // --- GİRİŞ / ÇIKIŞ ---
+            const login = async (e) => {
+                e.preventDefault();
+                const button = e.target.querySelector('button[type="submit"]');
+                showLoading(button);
+                loginError.classList.add('hidden');
+
+                const data = {
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value,
+                };
+                
+                try {
+                    const response = await fetch(`${API_URL}/login`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data)
+                    });
+                     const result = await response.json();
+                    if (!response.ok) {
+                         throw new Error(result.message || 'Giriş başarısız');
+                    }
+
+                    setToken(result.accessToken);
+                    
+                    loginScreen.classList.add('hidden');
+                    mainPanel.classList.remove('hidden');
+                    mainPanel.classList.add('fade-in');
+                    
+                    loadPage('dashboard');
+                    lucide.createIcons();
+
+                } catch (err) {
+                    loginError.textContent = err.message;
+                    loginError.classList.remove('hidden');
+                } finally {
+                    hideLoading(button);
+                }
+            };
+            
+            const logout = () => {
+                removeToken();
+                mainPanel.classList.add('hidden');
+                loginScreen.classList.remove('hidden');
+                loginScreen.classList.add('fade-in');
+            };
+            
+            // --- OLAY DİNLEYİCİLERİ ---
+            loginForm.addEventListener('submit', login);
+            logoutButton.addEventListener('click', logout);
+
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const link = e.target.closest('a');
+                    if (!link) return;
+                    const pageId = link.dataset.page;
+                    if (!pageId) return;
+
+                    sidebarItems.forEach(i => i.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    loadPage(pageId);
+                });
+            });
+
+            // --- Modal Listeners ---
+            document.querySelectorAll('.close-modal-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    addLineModal.classList.add('hidden');
+                    editLineModal.classList.add('hidden');
+                });
+            });
+            document.querySelectorAll('.cancel-modal-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    addLineModal.classList.add('hidden');
+                    editLineModal.classList.add('hidden');
+                });
+            });
+            
+            addLineForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const data = {
+                    ad: document.getElementById('line-name').value,
+                    hat_degeri: document.getElementById('line-price').value,
+                    durum: document.getElementById('line-status').value,
+                };
+                
+                try {
+                    await apiRequest('/lines', {
+                        method: 'POST',
+                        body: JSON.stringify(data),
+                    });
+                    alert('Hat başarıyla eklendi!');
+                    addLineModal.classList.add('hidden');
+                    e.target.reset();
+                    loadLines();
+                } catch(error) {
+                     // Hata zaten gösterildi.
+                }
+            });
+
+            editLineForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const lineId = document.getElementById('edit-line-id').value;
+                const data = {
+                    ad: document.getElementById('edit-line-name').value,
+                    hat_degeri: document.getElementById('edit-line-price').value,
+                    durum: document.getElementById('edit-line-status').value,
+                };
+
+                try {
+                    await apiRequest(`/lines/${lineId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(data),
+                    });
+                    alert('Hat başarıyla güncellendi.');
+                    editLineModal.classList.add('hidden');
+                    e.target.reset();
+                    loadLines(); // Tabloyu yenile
+                } catch(error) {
+                    // Hata zaten gösterildi.
+                }
+            });
+
+
+            // --- BAŞLANGIÇ ---
+            if (getToken()) {
+                loginScreen.classList.add('hidden');
+                mainPanel.classList.remove('hidden');
+                loadPage('dashboard');
+                lucide.createIcons();
+            } else {
+                 lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

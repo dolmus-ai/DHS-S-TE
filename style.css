@@ -1,0 +1,321 @@
+:root {
+    --dark-bg: #121212;
+    --dark-surface: #1E1E1E;
+    --neon-green: #39FF14;
+    --light-text: #F5F5F5;
+    --secondary-text: #A0A0A0;
+    --header-height: 80px;
+    --glow-color: rgba(57, 255, 20, 0.6);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { 
+    background-color: var(--dark-bg); 
+    color: var(--light-text); 
+    font-family: 'Roboto', sans-serif;
+    background-image: radial-gradient(circle at 10% 20%, rgba(57, 255, 20, 0.1), transparent 30%),
+                      radial-gradient(circle at 90% 80%, rgba(57, 255, 20, 0.1), transparent 30%);
+    background-attachment: fixed;
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+.btn { display: inline-block; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s ease; border: none; text-decoration: none; }
+.btn-primary { background-color: var(--neon-green); color: var(--dark-bg); box-shadow: 0 0 5px var(--glow-color), 0 0 15px var(--glow-color); }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 10px var(--glow-color), 0 0 25px var(--glow-color); }
+.btn-secondary { background-color: transparent; color: var(--neon-green); border: 2px solid var(--neon-green); }
+.btn-secondary:hover { background-color: var(--neon-green); color: var(--dark-bg); }
+header { position: fixed; top: 0; left: 0; width: 100%; height: var(--header-height); display: flex; justify-content: space-between; align-items: center; padding: 0 5%; background-color: rgba(18, 18, 18, 0.7); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+.logo { font-family: 'Poppins', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--light-text); text-decoration: none; cursor:pointer; }
+.logo span { color: var(--neon-green); }
+nav ul { display: flex; gap: 2rem; list-style: none; }
+nav a { font-weight: 500; padding: 5px 0; border-bottom: 2px solid transparent; transition: color 0.3s ease, border-color 0.3s ease; text-decoration: none; color: var(--secondary-text); cursor:pointer; }
+nav a:hover, nav a.active { color: var(--neon-green); border-bottom-color: var(--neon-green); }
+main { padding-top: var(--header-height); }
+.page-section { display: none; min-height: calc(100vh - var(--header-height) - 100px); padding: 4rem 0; }
+
+.page-section.active { 
+    display: block; 
+    animation: fadeInSlideUp 0.6s ease-out forwards;
+}
+@keyframes fadeInSlideUp { 
+    from { 
+        opacity: 0; 
+        transform: translateY(20px);
+    } 
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    } 
+}
+
+.page-section h2 { font-size: 2.5rem; text-align: center; margin-bottom: 3rem; color: var(--light-text); }
+.page-section h2 span { color: var(--neon-green); }
+
+#home.active { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+    min-height: calc(100vh - var(--header-height)); 
+    padding: 2rem; 
+}
+
+.hero-content h1 { font-size: 3.5rem; font-weight: 700; margin-bottom: 1rem; min-height: 4.5rem; }
+.hero-content p { max-width: 600px; margin: 0 auto 2rem; font-size: 1.1rem; color: var(--secondary-text); }
+.hero-buttons { display: flex; gap: 1rem; justify-content: center; }
+
+/* DÜZENLEME: Öne çıkma animasyonu için geçiş eklendi */
+.glass-effect {
+    background: rgba(30, 30, 30, 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out;
+}
+.glass-effect:hover {
+    border-color: rgba(57, 255, 20, 0.5);
+    box-shadow: 0 0 25px var(--glow-color);
+    transform: translateY(-8px) scale(1.02); /* Yükselme ve büyüme efekti */
+}
+
+.benefits-container {
+    margin-top: 5rem;
+    width: 100%;
+}
+.benefits-title {
+    font-size: 2.2rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    font-family: 'Poppins', sans-serif;
+}
+.benefits-title span {
+    color: var(--neon-green);
+}
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+.benefit-card {
+    padding: 2rem;
+    text-align: center;
+}
+.benefit-card h3 {
+    color: var(--neon-green);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+.benefit-card p {
+    color: var(--secondary-text);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.tabs-container { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+.tab-btn { padding: 10px 20px; background: var(--dark-surface); border: 1px solid var(--secondary-text); color: var(--secondary-text); cursor: pointer; border-radius: 8px; transition: all 0.3s; }
+.tab-btn.active, .tab-btn:hover { color: var(--dark-bg); background: var(--neon-green); border-color: var(--neon-green); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.tab-content h3 { color: var(--neon-green); margin-bottom: 1rem; }
+
+.faq-accordion { max-width: 800px; margin: 0 auto; }
+.faq-item { margin-bottom: 10px; }
+.faq-question { width: 100%; padding: 1rem 1.5rem; text-align: left; font-size: 1.1rem; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--light-text); background: none; border: none; }
+.faq-question::after { content: '+'; font-size: 1.5rem; color: var(--neon-green); transition: transform 0.3s ease; }
+.faq-item.active .faq-question::after { transform: rotate(45deg); }
+.faq-answer { max-height: 0; overflow: hidden; padding: 0 1.5rem; color: var(--secondary-text); transition: max-height 0.3s ease, padding 0.3s ease; }
+.faq-item.active .faq-answer { max-height: 300px; padding-bottom: 1rem; }
+
+#lines-grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+.line-card { padding: 1.5rem; }
+.line-card h3 { color: var(--neon-green); margin-bottom: 0.5rem; }
+.line-value { font-size: 1rem; color: var(--secondary-text); margin-bottom: 5px; }
+.line-value span { font-weight: 700; font-size: 1.2rem; color: var(--light-text); }
+.line-progress { margin-top: 15px; }
+.line-progress .progress-bar-container { height: 10px; background-color: var(--dark-bg); border-radius: 5px; border: 1px solid #333; overflow: hidden; }
+.line-progress .progress-bar { height: 100%; background: var(--neon-green); border-radius: 5px; }
+.line-progress .progress-text { font-size: 0.9rem; color: var(--secondary-text); margin-top: 5px; }
+.share-options { margin: 20px 0; display: flex; gap: 10px; }
+.share-btn { flex-grow: 1; background-color: #333; color: var(--secondary-text); border: 1px solid #444; padding: 10px 5px; cursor: pointer; transition: all 0.2s ease; border-radius: 4px; }
+.share-btn:hover { background-color: #444; color: var(--light-text); }
+.share-btn.selected { background-color: var(--neon-green); color: #000; font-weight: 700; border-color: var(--neon-green); }
+.investment-details { background-color: var(--dark-bg); padding: 15px; border-radius: 5px; text-align: center; margin-bottom: 20px; }
+.investment-details p { font-size: 1rem; color: var(--secondary-text); margin: 0; }
+.investment-details .investment-amount { font-size: 2rem; color: var(--neon-green); font-weight: 700; }
+.line-card .btn-buy-share { width: 100%; margin-top: auto; }
+
+.auth-container { max-width: 450px; margin: 0 auto; }
+.auth-container h3 { text-align:center; margin-bottom: 1.5rem; font-size: 1.8rem;}
+.auth-container form { display: flex; flex-direction: column; gap: 1rem; }
+.auth-container input { padding: 15px; background: var(--dark-surface); border: 1px solid #444; border-radius: 8px; color: var(--light-text); font-size: 1rem; }
+.auth-container .btn-primary { margin-top: 1rem; }
+.auth-container p { text-align: center; color: var(--secondary-text); margin-top:1.5rem; }
+.auth-container .form-toggle { color: var(--neon-green); cursor: pointer; text-decoration: underline; }
+#register-form-container { display: none; }
+
+.form-message { text-align: center; padding: 10px; border-radius: 5px; margin-top: 1rem; display: none; }
+.form-message.success { background-color: rgba(57, 255, 20, 0.2); color: var(--neon-green); }
+.form-message.error { background-color: rgba(255, 20, 20, 0.2); color: #ff1414; }
+.timeline { position: relative; max-width: 800px; margin: 0 auto; }
+.timeline::after { content: ''; position: absolute; width: 4px; background-color: var(--neon-green); top: 0; bottom: 0; left: 50%; margin-left: -2px; box-shadow: 0 0 10px var(--glow-color); }
+.timeline-container { padding: 10px 40px; position: relative; background-color: inherit; width: 50%; }
+.timeline-container.left { left: 0; }
+.timeline-container.right { left: 50%; }
+.timeline-container::after { content: ''; position: absolute; width: 20px; height: 20px; right: -10px; background-color: var(--dark-bg); border: 4px solid var(--neon-green); top: 25px; border-radius: 50%; z-index: 1; }
+.timeline-container.right::after { left: -10px; }
+.timeline-content { padding: 0; }
+.timeline-content h3 { color: var(--neon-green); }
+footer { text-align: center; padding: 1.5rem; margin-top: 2rem; background-color: var(--dark-surface); color: var(--secondary-text); font-size: 0.9rem; }
+
+
+/* --- MOBİL UYUMLULUK STİLLERİ --- */
+
+/* Hamburger Menü Butonu */
+#hamburger-btn {
+    display: none; /* Varsayılan olarak gizli */
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001; /* Menünün üstünde kalması için */
+}
+#hamburger-btn .line {
+    width: 2rem;
+    height: 0.25rem;
+    background: var(--light-text);
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+}
+
+/* Mobil Menü aktif olduğunda hamburger ikonunu X işaretine dönüştür */
+body.mobile-nav-active #hamburger-btn .line:nth-child(1) {
+    transform: rotate(45deg);
+}
+body.mobile-nav-active #hamburger-btn .line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(20px);
+}
+body.mobile-nav-active #hamburger-btn .line:nth-child(3) {
+    transform: rotate(-45deg);
+}
+
+/* Medya Sorgusu: Sadece mobil ekranlarda geçerli olacak stiller */
+@media (max-width: 768px) {
+    /* Masaüstü menüsünü mobilde gizle */
+    header nav#desktop-nav {
+        display: none;
+    }
+
+    /* Hamburger butonunu mobilde göster */
+    #hamburger-btn {
+        display: flex;
+    }
+
+    /* Mobilde görünecek olan menü panelinin kendisi */
+    header nav#desktop-nav.mobile-active {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(18, 18, 18, 0.95);
+        backdrop-filter: blur(10px);
+        transform: translateX(0%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    /* Mobil menüdeki link listesi */
+    header nav#desktop-nav.mobile-active ul {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* Mobil menüdeki her bir link */
+    header nav#desktop-nav.mobile-active ul li a {
+        font-size: 1.5rem;
+        color: var(--light-text);
+    }
+}
+/* KAMPANYA SAYFASI STİLLERİ */
+.campaign-list {
+    list-style: none;
+    padding: 0;
+    max-width: 500px;
+    margin: 40px auto;
+    text-align: left;
+}
+.campaign-list li {
+    background-color: var(--dark-surface);
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    border-left: 3px solid var(--neon-green);
+}
+.campaign-list li strong {
+    color: var(--neon-green);
+}
+/* <style> etiketlerinin en sonuna ekle */
+
+#my-investments-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.investment-card {
+    padding: 1.5rem; /* glass-effect'ten padding'i buraya taşıdık */
+}
+
+.investment-card h3 {
+    color: var(--neon-green);
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+.investment-card p {
+    color: var(--secondary-text);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.investment-card p strong {
+    color: var(--light-text);
+    font-weight: 600;
+}
+
+.investment-card .investment-date {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    text-align: right;
+}
+/* <style> etiketlerinin sonuna ekle */
+
+.stat-card {
+    text-align: center;
+}
+.stat-card h4 {
+    font-size: 1rem;
+    color: var(--secondary-text);
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+.stat-card p {
+    font-size: 2rem;
+    color: var(--neon-green);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
